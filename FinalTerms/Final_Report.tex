@@ -1,0 +1,441 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{vietnam}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+% Cài đặt lề trang đẹp hơn
+\geometry{
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3cm,
+    right=2.5cm
+}
+
+% Màu sắc chủ đạo
+\definecolor{primary}{RGB}{41, 128, 185}
+\definecolor{secondary}{RGB}{52, 152, 219}
+\definecolor{accent}{RGB}{231, 76, 60}
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{51, 51, 51}
+
+% Cài đặt tiêu đề mục với màu sắc
+\titleformat{\section}
+  {\Large\bfseries\color{primary}}
+  {\thesection}{1em}{}
+  
+\titleformat{\subsection}
+  {\large\bfseries\color{secondary}}
+  {\thesubsection}{1em}{}
+  
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{darkgray}}
+  {\thesubsubsection}{1em}{}
+
+% Header và Footer đẹp
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textit{CS441V - Data Visualization}}
+\fancyhead[R]{\textit{Báo Cáo Cuối Kỳ}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{primary}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{primary}\leaders\hrule height \footrulewidth\hfill}}
+
+% Cài đặt hyperlink
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    urlcolor=secondary,
+    citecolor=primary
+}
+
+% Đường dẫn ảnh (Bạn hãy tự tạo thư mục images/ và lưu các biểu đồ từ notebook vào đây)
+\graphicspath{{images/}}
+
+% Custom commands
+\newcommand{\highlight}[1]{\textcolor{primary}{\textbf{#1}}}
+
+\begin{document}
+
+% --- Trang bìa đẹp ---
+\begin{titlepage}
+    \centering
+    
+    % Header với logo giả định (nếu có)
+    \begin{tikzpicture}[remember picture, overlay]
+        \draw[primary, line width=2pt] (current page.north west) rectangle (current page.south east);
+        \fill[primary!10] (current page.north west) rectangle (current page.south east);
+    \end{tikzpicture}
+    
+    \vspace*{2cm}
+    
+    % Tiêu đề phụ
+    {\large \textcolor{primary}{\textbf{TRƯỜNG ĐẠI HỌC TÂN TẠO}}} \\
+    {\large \textcolor{primary}{\textbf{KHOA CÔNG NGHỆ THÔNG TIN}}} \\
+    \vspace{0.5cm}
+
+    
+    \vspace{2cm}
+    
+    % Dòng kẻ trang trí
+    \textcolor{primary}{\rule{\linewidth}{2pt}} \\[0.8cm]
+    
+    % Tiêu đề chính
+    {\Huge \textbf{BÁO CÁO CUỐI KỲ}} \\[0.8cm]
+    {\Large \textbf{Phân Tích Chuyên Sâu Đặc Điểm Bệnh Nhân}} \\
+    {\Large \textbf{Và Mức Độ Tương Tác Tại Các Trại Y Tế}} \\[0.8cm]
+    
+    \textcolor{primary}{\rule{\linewidth}{2pt}} \\[2cm]
+    
+    % Thông tin sinh viên
+    \begin{minipage}[t]{0.6\textwidth}
+        \centering
+        \large
+        \begin{tabular}{rl}
+            \highlight{Họ và tên:} & Trần Huỳnh Đức \\
+            \highlight{MSSV:} & 2302337 \\
+            \highlight{Môn học:} & Trực quan hóa Dữ liệu \\
+            \highlight{Giảng viên:} & TS.Nguyễn Xuân Hà \\
+            \highlight{Ngày nộp:} & \today \\
+        \end{tabular}
+    \end{minipage}
+    
+    \vfill
+    
+    
+\end{titlepage}
+
+% --- Tóm tắt (Abstract) được format đẹp ---
+\newpage
+\section*{Tóm tắt}
+\vspace{0.5cm}
+\begin{center}
+    \begin{minipage}{0.9\textwidth}
+        \setstretch{1.2}
+        \noindent
+        \textit{Báo cáo này trình bày kết quả toàn diện của dự án phân tích và trực quan hóa dữ liệu cuối kỳ nhằm khám phá sâu sắc đặc điểm nhân khẩu học, hành vi tương tác và xu hướng tham gia của những bệnh nhân tại các trại y tế định kỳ. Điểm cải tiến cốt lõi của đồ án nằm ở khối lượng xử lý dữ liệu và mức độ phức tạp trong logic; thay vì phân tích một tệp tin đơn lẻ, dự án tiến hành hợp nhất 6 tệp dữ liệu độc lập. Bằng việc áp dụng hệ thống 15 kỹ thuật trực quan hóa chuẩn chương trình học (Line Plot, Area Plot, Histogram, Bar Chart, Pie Chart, Box Plot, Scatter Plot, Bubble Plot, Waffle Chart, Word Cloud, Regression Plot), dự án đã bóc tách rõ ràng mối liên hệ giữa thời lượng tổ chức trại, danh mục trại, tương tác mạng xã hội và nhân khẩu học. Qua đó, báo cáo cung cấp các insights chiến lược nhằm tối ưu hóa chiến dịch thu hút bệnh nhân cho các trại y tế trong tương lai.}
+    \end{minipage}
+\end{center}
+\vspace{0.5cm}
+
+% --- Mục lục ---
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+% --- Nội dung chính ---
+\setcounter{page}{1}
+
+\section{Giới thiệu và Xác định vấn đề}
+
+\subsection{Bối cảnh dự án}
+Trong hệ sinh thái chăm sóc sức khỏe cộng đồng hiện đại, việc tổ chức các "Trại y tế định kỳ" (Health Camps) đóng vai trò như cầu nối thiết yếu giữa các cơ sở y tế và người dân. Tuy nhiên, một thực trạng chung mang tính "nút thắt cổ chai" hiện nay là tỷ lệ chuyển đổi (conversion rate) từ giai đoạn đăng ký (registration) sang hành vi đến khám thực tế (actual attendance) thường sụt giảm nghiêm trọng. Việc hàng ngàn người đăng ký ảo dẫn đến sự phân bổ lãng phí về vật tư y tế, thuốc men và quỹ thời gian quý báu của các chuyên gia.
+
+Thay vì tiếp cận theo hướng truyền thống là tìm hiểu nguyên nhân tại sao bệnh nhân không đến, đồ án này áp dụng một góc nhìn đảo ngược: Tập trung mổ xẻ toàn diện tệp khách hàng \textbf{đã tham gia thực tế}. Những bệnh nhân đã vượt qua rào cản thời gian để đến khám chính là tập dữ liệu quý giá nhất giúp phác họa nên "chân dung khách hàng lõi".
+
+\subsection{Mục tiêu nghiên cứu}
+Mục tiêu cốt lõi của báo cáo xoay quanh việc giải quyết bài toán lớn:
+
+\begin{center}
+    \fbox{\begin{minipage}{0.85\textwidth}
+        \centering
+        \textit{“Đặc điểm của những bệnh nhân thực sự đến tham gia các trại y tế là gì? Từ các yếu tố nhân khẩu học, danh mục phân loại trại, tương tác mạng xã hội, và thời lượng tổ chức, ta có thể rút ra những \textbf{insights} sâu sắc nào để tối ưu hóa chiến dịch Marketing và Hậu cần cho các sự kiện tương lai?”}
+    \end{minipage}}
+\end{center}
+
+Dự án này phân rã vấn đề thành 4 câu hỏi nghiên cứu định lượng:
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*]
+    \item Sự phân bố bệnh nhân tham gia chịu tác động thế nào bởi \textbf{thời gian thực tổ chức} (tháng trong năm) và \textbf{thời lượng sự kiện} (số ngày)?
+    \item Giữa hàng loạt các mô hình hình trại y tế đa dạng (Category 1, 2, 3), đâu là thỏi nam châm thu hút thị hiếu của người dân mạnh mẽ nhất?
+    \item Việc duy trì \textbf{dấu chân kỹ thuật số} (Facebook, Twitter, LinkedIn, Online Followers) có thực sự dẫn dắt người dùng thực hiện hành vi offline (đi khám) hay không?
+    \item Hệ thống \textbf{nhân khẩu học} (độ tuổi, thu nhập, nơi ở, nhóm ngành nghề) chỉ ra rằng tầng lớp nào trong xã hội đang khát khao dịch vụ y tế này nhất?
+\end{enumerate}
+
+\section{Sự Cải Tiến Đột Phá So Với Đồ Án Giữa Kỳ (Improvements)}
+
+Khác biệt hoàn toàn với bài phân tích thẻ nhớ SanDisk (Giữa kỳ), đồ án cuối kỳ này đánh dấu sự trưởng thành vượt bậc về mặt kỹ thuật lập trình và năng lực tư duy dữ liệu (Data Thinking) thông qua 3 yếu tố cốt lõi:
+
+\begin{itemize}
+    \item \textbf{Cấu trúc Cơ sở Dữ liệu Đa tầng (Relational Database Complexity):} Thay vì làm việc với 1 file \texttt{.csv} dạng phẳng chứa văn bản text đơn giản, dự án lần này phải đối mặt với một kiến trúc dữ liệu phân mảnh. Lập trình viên đã phải áp dụng thuần thục các kỹ thuật \texttt{pd.merge()}, \texttt{pd.concat()} để liên kết 6 bảng dữ liệu rời rạc (Hồ sơ cá nhân, Chi tiết sự kiện, và 3 tệp điểm danh khác nhau) thông qua các Khóa chính (Primary Keys). Đặc biệt, \textbf{bước sàng lọc dữ liệu đã chủ động loại bỏ toàn bộ tập Train/Test} dư thừa để giữ cho logic nghiên cứu đi đúng hướng: Chỉ phân tích người đi khám.
+    \item \textbf{Hệ sinh thái Trực quan hóa Khổng lồ (Visual Diversity):} Số lượng biểu đồ được nâng cấp từ 4 lên đến \textbf{15 biểu đồ phân tích chuyên sâu}. Không dừng lại ở các loại hình cơ bản như Pie Chart hay Bar Chart, báo cáo phô diễn hàng loạt các kỹ thuật biểu diễn phức tạp có trong bài học như:
+    \begin{itemize}
+        \item \textit{Bubble Plot}: Hiển thị 4 chiều không gian (X, Y, Size, Hue) để so sánh đa biến.
+        \item \textit{Regression Plot}: Tính toán và vẽ đường xu hướng hồi quy giữa thời lượng và lượt tham gia.
+        \item \textit{Waffle Chart}: Trực quan hóa tỷ trọng các thành phần dưới dạng lưới ô vuông sáng tạo.
+        \item \textit{Word Cloud}: Trực quan hóa tần suất các ngành nghề bằng kích thước chữ nghệ thuật.
+    \end{itemize}
+    \item \textbf{Khai phá Đặc trưng Tầng sâu (Feature Engineering):} Khác với giữa kỳ chỉ xử lý dữ liệu thô có sẵn, bài toán cuối kỳ đòi hỏi sự nhạy bén để tự tính toán và tạo ra các biến mới mang tính quyết định:
+    \begin{itemize}
+        \item \texttt{Camp\_Duration}: Tính toán thời lượng diễn ra sự kiện bằng cách trừ \texttt{End\_Date} cho \texttt{Start\_Date}.
+        \item \texttt{Social\_Media\_Interaction}: Gom nhóm 4 kênh mạng xã hội phân tán thành một biến đánh giá mức độ tương tác tổng thể.
+    \end{itemize}
+\end{itemize}
+
+\section{Tiền xử lý và Khai phá Dữ liệu (Data Preprocessing)}
+
+\subsection{Cấu trúc Tập dữ liệu Thô}
+Tập dữ liệu Healthcare Analytics cung cấp thông tin liên quan đến các đặc trưng cơ bản trải dài qua các File sau:
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{p{4.5cm} p{6cm} p{4.5cm}}
+        \toprule
+        \rowcolor{lightgray}
+        \textbf{Bảng dữ liệu} & \textbf{Ý nghĩa nội dung} & \textbf{Trường khóa quan trọng} \\
+        \midrule
+        \texttt{Health\_Camp\_Detail} & Chi tiết ngày tổ chức, loại hình & Start\_Date, End\_Date, Category1, Category2 \\
+        \texttt{Patient\_Profile} & Thông tin nhân khẩu học, thu nhập & Age, Income, City\_Type, Employer \\
+        \texttt{First\_Camp\_Attended} & Hồ sơ điểm danh trại 1 & Patient\_ID, Camp\_ID \\
+        \texttt{Second\_Camp\_Attended}& Hồ sơ điểm danh trại 2 & Patient\_ID, Camp\_ID \\
+        \texttt{Third\_Camp\_Attended} & Hồ sơ điểm danh trại 3 & Patient\_ID, Camp\_ID \\
+        \bottomrule
+    \end{tabular}
+    \caption{Mô tả các bảng dữ liệu gốc phục vụ truy vấn}
+    \label{tab:data_structure_final}
+\end{table}
+
+\subsection{Quy trình Làm sạch và Hợp nhất (Data Wrangling)}
+Sử dụng thư viện Pandas, một pipeline xử lý dữ liệu chuyên nghiệp được thiết lập:
+\begin{enumerate}
+    \item \textbf{Thao tác Datetime:} Ép kiểu các chuỗi ngày tháng bằng \texttt{pd.to\_datetime()} với tham số \texttt{format='\%d-\%b-\%y'}.
+    \item \textbf{Ghép dọc (Concatenate):} Dùng lệnh \texttt{pd.concat()} ghép 3 bảng \texttt{Attended} theo chiều dọc, sau đó dùng lệnh \texttt{drop\_duplicates()} để tạo ra một danh sách "Master" gồm những mã bệnh nhân có đi khám.
+    \item \textbf{Ghép ngang (Merge/Join):} Thực hiện \texttt{Left Join} bảng "Master" với bảng \texttt{Camp\_Detail} và \texttt{Patient\_Profile}. Kết quả là một DataFrame duy nhất chứa đầy đủ thông tin đa chiều.
+    \item \textbf{Xử lý Dữ liệu Khuyết (Missing Values Imputation):} Các trường như \texttt{Age} (Độ tuổi) và \texttt{Income} (Thu nhập) chứa nhiều giá trị \texttt{None} hoặc \texttt{NaN} dưới dạng chuỗi văn bản. Hàm \texttt{pd.to\_numeric(errors='coerce')} được áp dụng để chuyển hóa thành dạng số Float thực thụ nhằm phục vụ việc vẽ biểu đồ phân phối.
+\end{enumerate}
+
+\section{Phân Tích và Trực Quan Hóa Bằng Đồ Thị}
+
+Bằng việc lập trình trên \texttt{Jupyter Notebook}, hệ thống 15 đồ thị đã được sản sinh để trả lời triệt để 4 câu hỏi nghiên cứu. Dưới đây là phần trình bày chi tiết tường tận từng mục.
+
+\subsection{Câu hỏi 1: Xu hướng tham gia theo Thời gian và Thời lượng}
+Trục phân tích này giúp ban quản trị xác định "thời điểm vàng" và "thời lượng vàng" để tối ưu hóa nguồn lực.
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*]
+    \item \textbf{Line Plot \& Area Plot (Biểu đồ 1 \& 2):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Theo dõi số lượng bệnh nhân tham gia thực tế theo từng tháng.
+        \item \textit{Lý do:} Line Plot giúp nhận diện xu hướng tăng trưởng/sụt giảm. Area Plot nhấn mạnh vào quy mô (volume) tích lũy, giúp hình dung độ lớn của tệp khách hàng một cách trực quan.
+        \item \textit{Insight:} Lượng khách không ổn định mà có tính chu kỳ cao. Việc phát hiện các tháng cao điểm giúp ban tổ chức chủ động trong việc điều động nhân sự và vật tư y tế dự phòng.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{fig1.png}
+        \caption{Biểu đồ 1 \& 2: Xu hướng và quy mô tham gia theo thời gian (Line \& Area Plot)}
+        \label{fig:trend_time}
+    \end{figure}
+    
+    \item \textbf{Regression Plot (Biểu đồ 3):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Khảo sát mối tương quan giữa số ngày mở trại và tổng lượt khách.
+        \item \textit{Lý do:} Đường hồi quy giúp kiểm chứng ngay lập tức liệu việc kéo dài thời gian có mang lại hiệu quả tỷ lệ thuận hay không.
+        \item \textit{Insight:} Một phát hiện bất ngờ là đường hồi quy có xu hướng đi ngang. Việc kéo dài trại y tế quá lâu (trên 15 ngày) không làm tăng lượt khách mà chỉ gây lãng phí chi phí vận hành. Hiệu ứng "khan hiếm" ở các trại ngắn ngày tỏ ra hiệu quả hơn.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig3.png}
+        \caption{Biểu đồ 3: Tương quan giữa thời lượng và lượt tham gia (Regression Plot)}
+        \label{fig:reg_duration}
+    \end{figure}
+    
+    \item \textbf{Box Plot (Biểu đồ 4):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Phân tích sự phân tán lượt tham gia theo các nhóm thời lượng (0-3 ngày, 3-7 ngày, >7 ngày).
+        \item \textit{Insight:} Nhóm trại từ **3-7 ngày** có mức trung vị cao và ổn định nhất. Đây là "điểm ngọt" để đạt được sự cân bằng giữa chi phí vận hành và hiệu suất phục vụ.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig4.png}
+        \caption{Biểu đồ 4: Phân phối lượt tham gia theo nhóm thời lượng (Box Plot)}
+        \label{fig:box_duration}
+    \end{figure}
+\end{enumerate}
+
+\subsection{Câu hỏi 2: Sự khác biệt giữa các Danh mục trại (Category)}
+Sử dụng 3 biểu đồ để bóc tách thị hiếu của người dân đối với các mô hình trại khác nhau.
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, resume]
+    \item \textbf{Pie Chart Subplots (Biểu đồ 5):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Tỷ trọng người tham gia giữa Category 1 và Category 3.
+        \item \textit{Insight:} Nhóm 'First' (Category 1) chiếm ưu thế tuyệt đối (trên 70%). Đây là dòng dịch vụ cốt lõi cần được ưu tiên hàng đầu.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{fig5.png}
+        \caption{Biểu đồ 5: Tỷ trọng tham gia theo Category 1 \& 3 (Pie Charts)}
+        \label{fig:pie_cat}
+    \end{figure}
+    
+    \item \textbf{Horizontal Bar Chart (Biểu đồ 6):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Xếp hạng các phân nhóm nhỏ trong Category 2.
+        \item \textit{Lý do:} Dạng cột ngang giúp các nhãn văn bản không bị chồng lấp, tăng khả năng đọc hiểu.
+        \item \textit{Insight:} Phát hiện sự chênh lệch lớn giữa các nhánh dịch vụ. Ban tổ chức nên tập trung nguồn lực vào các nhánh dẫn đầu thay vì dàn trải.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig6.png}
+        \caption{Biểu đồ 6: Xếp hạng lượt tham gia theo Category 2 (Horizontal Bar)}
+        \label{fig:bar_cat2}
+    \end{figure}
+    
+    \item \textbf{Multivariate Bubble Plot (Biểu đồ 7):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Biểu đồ bong bóng thể hiện tương quan 4 chiều: Cat 1, Cat 2, Số lượng (size) và Cat 3 (hue/subplots).
+        \item \textit{Insight:} Chỉ rõ các "tổ hợp dịch vụ" đông khách nhất cho từng phân khúc Category 3, giúp cá nhân hóa các gói dịch vụ y tế.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{fig7.png}
+        \caption{Biểu đồ 7: Mật độ tham gia đa biến phân tách theo Category 3 (Bubble Plot)}
+        \label{fig:bubble_cat}
+    \end{figure}
+\end{enumerate}
+
+\subsection{Câu hỏi 3: Vai trò của Mạng xã hội (Social Media Impact)}
+Đánh giá tác động của truyền thông kỹ thuật số đối với hành vi offline thực tế.
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, resume]
+    \item \textbf{Vertical Bar Chart (Biểu đồ 8):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} So sánh lượt khách của nhóm có và không có tương tác MXH.
+        \item \textit{Insight:} Khẳng định truyền thông số đóng vai trò "đòn bẩy" quan trọng. Người dùng có tương tác online có xu hướng chuyển đổi thành bệnh nhân thực tế cao hơn.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{fig8.png}
+        \caption{Biểu đồ 8: So sánh nhóm có và không có tương tác MXH (Bar Chart)}
+        \label{fig:bar_social}
+    \end{figure}
+    
+    \item \textbf{Grouped Bar Chart (Biểu đồ 9):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} So sánh hiệu quả giữa các kênh Facebook, LinkedIn, Twitter và Online Followers.
+        \item \textit{Insight:} **Facebook và LinkedIn** là hai kênh tiếp cận hiệu quả nhất. Ngân sách marketing nên được tập trung vào đây.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig9.png}
+        \caption{Biểu đồ 9: Hiệu quả các kênh mạng xã hội (Grouped Bar Chart)}
+        \label{fig:bar_platforms}
+    \end{figure}
+    
+    \item \textbf{Expanded Box Plots (Biểu đồ 10):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Mức độ tương tác MXH phân rã theo cả 3 Category.
+        \item \textit{Insight:} Khách hàng ở các trại loại 1 có xu hướng tương tác online tích cực hơn, mở ra cơ hội triển khai các chiến dịch chăm sóc khách hàng số.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{fig10.png}
+        \caption{Biểu đồ 10: Phân phối điểm tương tác MXH theo loại trại (Box Plots)}
+        \label{fig:box_social_cat}
+    \end{figure}
+\end{enumerate}
+
+\subsection{Câu hỏi 4: Nhân khẩu học của bệnh nhân (Customer Persona)}
+Phác họa chân dung khách hàng cốt lõi để tối ưu hóa việc nhắm mục tiêu.
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*, resume]
+    \item \textbf{Histogram (Biểu đồ 11):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Phân phối độ tuổi của người tham gia.
+        \item \textit{Insight:} Đỉnh nhọn của biểu đồ nằm ở nhóm **40-65 tuổi**. Đây là phân khúc có nhu cầu y tế cao nhất và là đối tượng phục vụ chính của các trại y tế.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig11.png}
+        \caption{Biểu đồ 11: Phân phối độ tuổi của người tham gia (Histogram)}
+        \label{fig:hist_age}
+    \end{figure}
+    
+    \item \textbf{Word Cloud (Biểu đồ 12):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Trực quan hóa các nhóm ngành nghề (Employer Category) phổ biến.
+        \item \textit{Insight:} Các từ khóa **Technology và BFSI** hiện lên nổi bật nhất. Điều này cho thấy nhân viên văn phòng là tệp khách hàng tiềm năng lớn với ý thức sức khỏe cao.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{fig12.png}
+        \caption{Biểu đồ 12: Các nhóm ngành nghề phổ biến (Word Cloud)}
+        \label{fig:wordcloud_jobs}
+    \end{figure}
+    
+    \item \textbf{Waffle Chart (Biểu đồ 13):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Tỷ trọng khách hàng theo loại đô thị sinh sống.
+        \item \textit{Insight:} Đa số khách hàng đến từ các **đô thị loại H**, xác định đây là địa bàn chiến lược để đặt địa điểm tổ chức trại.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\linewidth]{fig13.png}
+        \caption{Biểu đồ 13: Tỷ trọng khách hàng theo đô thị (Waffle Chart)}
+        \label{fig:waffle_city}
+    \end{figure}
+    
+    \item \textbf{Scatter Plot (Biểu đồ 14 \& 15):} 
+    \begin{itemize}
+        \item \textit{Mô tả:} Phân tích mức thu nhập và mối quan hệ giữa Tuổi và Thu nhập.
+        \item \textit{Insight:} Bệnh nhân tập trung ở phân khúc thu nhập trung bình (0-2). Biểu đồ phân tán cho thấy dịch vụ này tiếp cận được đa dạng mọi tầng lớp nhân dân mà không bị giới hạn bởi rào cản tài chính quá lớn.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig14.png}
+        \caption{Biểu đồ 14: Phân phối mức thu nhập (Bar Chart)}
+        \label{fig:bar_income}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig15.png}
+        \caption{Biểu đồ 15: Tương quan Tuổi và Thu nhập (Scatter Plot)}
+        \label{fig:scatter_age_income}
+    \end{figure}
+\end{enumerate}
+
+\section{Đánh giá Hạn chế (Data Limitations)}
+Dù bộ dữ liệu và phương pháp xử lý đạt mức độ phức tạp cao, báo cáo cũng thẳng thắn nhìn nhận một số giới hạn của dữ liệu:
+\begin{itemize}
+    \item Lượng giá trị khuyết (Missing Values) ở biến Thu nhập (Income) tương đối lớn, buộc phải dùng kỹ thuật ép kiểu loại trừ, điều này có thể làm sai lệch nhẹ cấu trúc tài chính tổng thể.
+    \item Báo cáo hiện tại chỉ khoanh vùng tập trung vào tệp khách hàng "Đã đi khám" (Positive Class). Để có cái nhìn toàn diện 360 độ nhằm xây dựng mô hình Học máy (Machine Learning) tương lai, bước tiếp theo cần phải so sánh đối chứng song song đặc tính với tệp "Đăng ký nhưng bỏ cuộc" (Negative Class).
+\end{itemize}
+
+\section{Kết Luận và Đề Xuất Quản Trị}
+
+\subsection{Tổng kết Insights}
+Trải qua quá trình tiền xử lý khối lượng lớn dữ liệu đa bảng, kết hợp cùng 15 kỹ thuật vẽ biểu đồ đa chiều tinh xảo, dự án đã bóc tách rõ rệt cấu trúc DNA của những bệnh nhân tham gia Trại y tế:
+Họ là tập khách hàng trung niên (quanh mốc 45 tuổi), làm việc miệt mài trong các văn phòng Công nghệ, Phần mềm và Ngân hàng. Mặc dù có quỹ thời gian bận rộn, họ bị thúc đẩy mạnh mẽ bởi các chiến dịch được Marketing trên Mạng xã hội, và họ cực kỳ ưu tiên tham gia các sự kiện y tế mang tính chất "chớp nhoáng" (ngắn ngày) thay vì các chương trình kéo dài hàng tuần.
+
+\subsection{Khuyến nghị và Đề Xuất Chiến Lược}
+Căn cứ vào dữ kiện toán học đã được chứng minh, nhằm tối ưu hóa tỷ lệ chuyển đổi ROI và cắt giảm tình trạng lãng phí tài nguyên y tế trong các mùa sự kiện tới, ban lãnh đạo cần thực thi triệt để 3 trọng tâm chiến lược:
+
+\begin{itemize}
+    \item \textbf{Targeting Quảng cáo:} Tập trung nguồn lực vào nhóm trung niên (40-65 tuổi) tại các đô thị loại H, làm việc trong ngành Technology/BFSI. Đây là tệp "High-intent" có tỷ lệ chuyển đổi cao nhất.
+    \item \textbf{Truyền thông Số:} Đẩy mạnh tương tác trên Facebook và LinkedIn. Dữ liệu chứng minh rằng khách hàng có tương tác online tích cực sẽ có xu hướng đi khám thực tế cao hơn.
+    \item \textbf{Chiến lược Vận hành:} Ưu tiên các trại có thời lượng ngắn và trung bình (3-7 ngày) để kích thích tâm lý tham gia và tối ưu hóa chi phí hậu cần. Tập trung vào các tổ hợp Category 1 (First) là thế mạnh cốt lõi.
+\end{itemize}
+
+\vspace{2cm}
+
+\begin{center}
+    \rule{0.7\textwidth}{0.5pt}\\[0.5cm]
+    {\large \textbf{--- HẾT BÁO CÁO CUỐI KỲ ---}}\\[0.3cm]
+    \textit{Cảm ơn thầy và các bạn đã theo dõi!}
+\end{center}
+
+\end{document}
